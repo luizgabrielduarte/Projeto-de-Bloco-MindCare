@@ -1,0 +1,21 @@
+:root {
+  --verde: #5C8A6E;
+  --verde-claro: #EAF2EE;
+  --texto: #1C2B22;
+  --cinza: #6B7E74;
+  --branco: #FFFFFF;
+  --fundo: #F5F7F5;
+  --borda: #D8E5DC;
+  --erro: #C0392B;
+  --sucesso: #2D7A50;
+  --raio: 12px;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: system-ui, sans-serif;
+  background: var(--fundo);
+  color: var(--texto);
+  min-height: 100dvh;
+}

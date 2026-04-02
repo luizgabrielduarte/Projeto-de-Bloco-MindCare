@@ -1,0 +1,33 @@
+.group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.label {
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+.field {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border: 1.5px solid var(--borda);
+  border-radius: var(--raio);
+  font-size: 1rem;
+  outline: none;
+  min-height: 48px;
+}
+
+.field:focus {
+  border-color: var(--verde);
+}
+
+.fieldError {
+  border-color: var(--erro);
+}
+
+.errorMsg {
+  font-size: 0.8rem;
+  color: var(--erro);
+}
