@@ -252,7 +252,12 @@ export default function CadastroPage() {
         criadoEm:  new Date(),
       })
 
-      navigate('/', { state: { cadastroSucesso: true } })
+      sessionStorage.setItem(
+        "toast",
+        "Cadastro realizado com sucesso!"
+      )
+
+      navigate('/login', { state: { cadastroSucesso: true } })
     } catch (err) {
       switch (err.code) {
         case 'auth/email-already-in-use':

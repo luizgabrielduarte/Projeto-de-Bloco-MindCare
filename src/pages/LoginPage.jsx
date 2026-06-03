@@ -20,6 +20,16 @@ export default function LoginPage() {
   const touchStartX = useRef(null)
   const touchStartY = useRef(null)
   const touchStartTime = useRef(null)
+  const [toast, setToast] = useState("")
+
+  useEffect(() => {
+    const mensagem = sessionStorage.getItem("toast")
+
+    if (mensagem) {
+      setToast(mensagem)
+      sessionStorage.removeItem("toast")
+    }
+  }, [])
 
   useEffect(() => {
     if (location.state?.cadastroSucesso) {
@@ -28,7 +38,7 @@ export default function LoginPage() {
     }
   }, [])
 
-  // Swipe right → back to home
+  // Gesto
   useEffect(() => {
     const onTouchStart = (e) => {
       touchStartX.current = e.touches[0].clientX
