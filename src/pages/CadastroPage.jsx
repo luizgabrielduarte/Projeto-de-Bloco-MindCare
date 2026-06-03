@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import { createUserWithEmailAndPassword, fetchSignInMethodsForEmail } from 'firebase/auth'
 import { collection, query, where, getDocs, setDoc, doc } from 'firebase/firestore'
@@ -6,6 +6,7 @@ import { auth, db } from '../firebase'
 import Input from '../components/Input.jsx'
 import Button from '../components/Button.jsx'
 import Alert from '../components/Alert.jsx'
+import Navbar from '../components/Navbar.jsx'
 import styles from './CadastroPage.module.css'
 
 function validarCPF(cpf) {
@@ -68,6 +69,33 @@ export default function CadastroPage() {
   const [erroGeral, setErroGeral] = useState('')
   const [loading, setLoading] = useState(false)
   const navigate = useNavigate()
+  const touchStartX = useRef(null)
+  const touchStartY = useRef(null)
+  const touchStartTime = useRef(null)
+
+  // Swipe right → back to home
+  useEffect(() => {
+    const onTouchStart = (e) => {
+      touchStartX.current = e.touches[0].clientX
+      touchStartY.current = e.touches[0].clientY
+      touchStartTime.current = Date.now()
+    }
+    const onTouchEnd = (e) => {
+      if (touchStartX.current === null) return
+      const dx = e.changedTouches[0].clientX - touchStartX.current
+      const dy = Math.abs(e.changedTouches[0].clientY - touchStartY.current)
+      const dt = Date.now() - touchStartTime.current
+      if (dx > 60 && dy < 80 && dt < 500) navigate('/')
+      touchStartX.current = null
+    }
+    document.addEventListener('touchstart', onTouchStart, { passive: true })
+    document.addEventListener('touchend',   onTouchEnd,   { passive: true })
+    return () => {
+      document.removeEventListener('touchstart', onTouchStart)
+      document.removeEventListener('touchend',   onTouchEnd)
+    }
+  }, [navigate])
+
 
   function set(campo, valor, erro = '') {
     setCampos(prev => ({ ...prev, [campo]: { valor, erro } }))
@@ -242,7 +270,9 @@ export default function CadastroPage() {
   }
 
   return (
-    <main className={styles.page}>
+    <>
+      <Navbar />
+      <main className={styles.page}>
       <div className={styles.card}>
 
         <div className={styles.header}>
@@ -339,10 +369,11 @@ export default function CadastroPage() {
 
           <p className={styles.hint}>
             Já tem conta?{' '}
-            <Link to="/" className={styles.link}>Entrar</Link>
+            <Link to="/login" className={styles.link}>Entrar</Link>
           </p>
         </form>
       </div>
     </main>
+    </>
   )
 }

@@ -1,0 +1,270 @@
+@import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Nunito:wght@400;500;600&display=swap');
+
+.page {
+  min-height: 100dvh;
+  background: var(--fundo);
+  overflow-x: hidden;
+  font-family: 'Nunito', system-ui, sans-serif;
+}
+
+.hero {
+  position: relative;
+  min-height: 100dvh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6.5rem 1.5rem 4rem;
+  overflow: hidden;
+}
+
+.heroBg {
+  position: absolute;
+  top: -15%;
+  right: -20%;
+  width: 60vmax;
+  height: 60vmax;
+  background: radial-gradient(circle at 60% 40%, var(--verde-claro) 0%, transparent 70%);
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.heroContent {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  max-width: 480px;
+  width: 100%;
+}
+
+.heroLogo {
+  width: 168px;
+  height: 168px;
+  object-fit: contain;
+  margin-bottom: 1.5rem;
+  animation: popIn 0.65s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+
+.heroTitle {
+  font-family: 'DM Serif Display', serif;
+  font-size: 2rem;
+  font-weight: 400;
+  line-height: 1.2;
+  color: var(--texto);
+  margin-bottom: 1rem;
+  animation: fadeUp 0.7s 0.15s ease-out both;
+}
+
+.heroTitle em {
+  font-style: italic;
+  color: var(--verde);
+}
+
+.heroSub {
+  font-size: 0.95rem;
+  color: var(--cinza);
+  line-height: 1.65;
+  margin-bottom: 2.25rem;
+  animation: fadeUp 0.7s 0.25s ease-out both;
+}
+
+.heroCtas {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  width: 100%;
+  max-width: 300px;
+  animation: fadeUp 0.7s 0.35s ease-out both;
+}
+
+.ctaPrimary {
+  display: block;
+  padding: 0.95rem 1.5rem;
+  background: var(--verde);
+  color: #fff;
+  border-radius: 100px;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 0.95rem;
+  text-align: center;
+  transition: opacity 0.2s, transform 0.15s;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.ctaPrimary:hover  { opacity: 0.88; }
+.ctaPrimary:active { transform: scale(0.96); }
+
+.ctaSecondary {
+  display: block;
+  padding: 0.95rem 1.5rem;
+  background: transparent;
+  color: var(--verde);
+  border: 1.5px solid var(--verde);
+  border-radius: 100px;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 0.95rem;
+  text-align: center;
+  transition: background 0.2s, color 0.2s, transform 0.15s;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.ctaSecondary:hover  { background: var(--verde-claro); }
+.ctaSecondary:active { transform: scale(0.96); }
+
+.swipeHint {
+  margin-top: 2.5rem;
+  font-size: 0.72rem;
+  color: var(--borda);
+  letter-spacing: 0.06em;
+  user-select: none;
+  animation: fadeUp 0.7s 0.5s ease-out both;
+}
+
+.about {
+  background: var(--branco);
+  padding: 3.5rem 1.5rem 4rem;
+  border-top: 1px solid var(--borda);
+}
+
+.aboutInner {
+  max-width: 540px;
+  margin: 0 auto;
+}
+
+.tag {
+  display: inline-block;
+  background: var(--verde-claro);
+  color: var(--verde);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 0.3rem 0.8rem;
+  border-radius: 100px;
+  margin-bottom: 1.25rem;
+}
+
+.aboutTitle {
+  font-family: 'DM Serif Display', serif;
+  font-size: 1.6rem;
+  font-weight: 400;
+  line-height: 1.25;
+  color: var(--texto);
+  margin-bottom: 1.25rem;
+}
+
+.aboutText {
+  font-size: 0.93rem;
+  color: var(--cinza);
+  line-height: 1.75;
+  margin-bottom: 1rem;
+}
+
+.aboutText strong {
+  color: var(--texto);
+  font-weight: 600;
+}
+
+.pillars {
+  display: flex;
+  gap: 0.75rem;
+  margin-top: 2rem;
+}
+
+.pillar {
+  flex: 1;
+  background: var(--fundo);
+  border: 1px solid var(--borda);
+  border-radius: var(--raio);
+  padding: 1.1rem 0.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--texto);
+  text-align: center;
+}
+
+.pillarIcon {
+  font-size: 1.5rem;
+  line-height: 1;
+}
+
+.footer {
+  padding: 2rem 1.5rem 2.5rem;
+  text-align: center;
+  border-top: 1px solid var(--borda);
+  background: var(--fundo);
+}
+
+.footerLogo {
+  width: 34px;
+  height: 34px;
+  object-fit: contain;
+  margin-bottom: 0.6rem;
+  opacity: 0.55;
+}
+
+.footerText {
+  font-size: 0.78rem;
+  color: var(--cinza);
+  margin-bottom: 0.25rem;
+}
+
+.footerSmall {
+  font-size: 0.7rem;
+  color: var(--borda);
+}
+
+@keyframes popIn {
+  from { transform: scale(0.65); opacity: 0; }
+  to   { transform: scale(1);    opacity: 1; }
+}
+
+@keyframes fadeUp {
+  from { transform: translateY(18px); opacity: 0; }
+  to   { transform: translateY(0);    opacity: 1; }
+}
+
+@media (min-width: 600px) {
+  .heroTitle { font-size: 2.8rem; }
+  .heroSub   { font-size: 1rem; }
+
+  .heroLogo {
+    width: 252px;
+    height: 252px;
+  }
+
+  .heroCtas {
+    flex-direction: row;
+    max-width: none;
+    width: auto;
+  }
+
+  .ctaPrimary,
+  .ctaSecondary {
+    min-width: 200px;
+  }
+
+  .swipeHint {
+    display: none;
+  }
+
+  .aboutTitle { font-size: 2rem; }
+}
+
+@media (min-width: 900px) {
+  .heroTitle { font-size: 3.2rem; }
+  .about { padding: 5rem 2rem 6rem; }
+
+  .heroLogo {
+    width: 336px;
+    height: 336px;
+  }
+}

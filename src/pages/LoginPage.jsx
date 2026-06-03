@@ -1,7 +1,8 @@
-import { useState, useEffect } from 'react'
-import { Link, useLocation } from 'react-router-dom'
+import { useState, useEffect, useRef } from 'react'
+import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { signInWithEmailAndPassword } from 'firebase/auth'
 import { auth } from '../firebase'
+import Navbar from '../components/Navbar.jsx'
 import Input from '../components/Input.jsx'
 import Button from '../components/Button.jsx'
 import Alert from '../components/Alert.jsx'
@@ -15,6 +16,10 @@ export default function LoginPage() {
   const [loading, setLoading] = useState(false)
   const [toast, setToast] = useState('')
   const location = useLocation()
+  const navigate = useNavigate()
+  const touchStartX = useRef(null)
+  const touchStartY = useRef(null)
+  const touchStartTime = useRef(null)
 
   useEffect(() => {
     if (location.state?.cadastroSucesso) {
@@ -22,6 +27,29 @@ export default function LoginPage() {
       window.history.replaceState({}, '')
     }
   }, [])
+
+  // Swipe right → back to home
+  useEffect(() => {
+    const onTouchStart = (e) => {
+      touchStartX.current = e.touches[0].clientX
+      touchStartY.current = e.touches[0].clientY
+      touchStartTime.current = Date.now()
+    }
+    const onTouchEnd = (e) => {
+      if (touchStartX.current === null) return
+      const dx = e.changedTouches[0].clientX - touchStartX.current
+      const dy = Math.abs(e.changedTouches[0].clientY - touchStartY.current)
+      const dt = Date.now() - touchStartTime.current
+      if (dx > 60 && dy < 80 && dt < 500) navigate('/')
+      touchStartX.current = null
+    }
+    document.addEventListener('touchstart', onTouchStart, { passive: true })
+    document.addEventListener('touchend',   onTouchEnd,   { passive: true })
+    return () => {
+      document.removeEventListener('touchstart', onTouchStart)
+      document.removeEventListener('touchend',   onTouchEnd)
+    }
+  }, [navigate])
 
   async function handleSubmit(e) {
     e.preventDefault()
@@ -59,53 +87,56 @@ export default function LoginPage() {
   }
 
   return (
-    <main className={styles.page}>
-      <div className={styles.card}>
+    <>
+      <Navbar />
+      <main className={styles.page}>
+        <div className={styles.card}>
 
-        <div className={styles.header}>
-          <h1>MindCare</h1>
-          <p>Acesse sua conta para continuar</p>
+          <div className={styles.header}>
+            <h1>Entrar</h1>
+            <p>Acesse sua conta para continuar</p>
+          </div>
+
+          <form className={styles.form} onSubmit={handleSubmit} noValidate>
+            <Alert type="error" message={erro} />
+
+            <Input
+              id="email"
+              label="E-mail"
+              type="email"
+              value={email}
+              onChange={e => setEmail(e.target.value)}
+              placeholder="Digite seu e-mail"
+              error={erro && !email.trim() ? 'Campo obrigatório' : ''}
+            />
+
+            <Input
+              id="senha"
+              label="Senha"
+              type="password"
+              value={senha}
+              onChange={e => setSenha(e.target.value)}
+              placeholder="Digite sua senha"
+              error={erro && !senha.trim() ? 'Campo obrigatório' : ''}
+            />
+
+            <Button type="submit" loading={loading} disabled={loading}>
+              {loading ? 'Entrando...' : 'Entrar'}
+            </Button>
+
+            <p className={styles.hint}>
+              Não tem conta?{' '}
+              <Link to="/cadastro" className={styles.link}>Cadastre-se</Link>
+            </p>
+          </form>
         </div>
 
-        <form className={styles.form} onSubmit={handleSubmit} noValidate>
-          <Alert type="error" message={erro} />
-
-          <Input
-            id="email"
-            label="E-mail"
-            type="email"
-            value={email}
-            onChange={e => setEmail(e.target.value)}
-            placeholder="Digite seu e-mail"
-            error={erro && !email.trim() ? 'Campo obrigatório' : ''}
-          />
-
-          <Input
-            id="senha"
-            label="Senha"
-            type="password"
-            value={senha}
-            onChange={e => setSenha(e.target.value)}
-            placeholder="Digite sua senha"
-            error={erro && !senha.trim() ? 'Campo obrigatório' : ''}
-          />
-
-          <Button type="submit" loading={loading} disabled={loading}>
-            {loading ? 'Entrando...' : 'Entrar'}
-          </Button>
-
-          <p className={styles.hint}>
-            Não tem conta?{' '}
-            <Link to="/cadastro" className={styles.link}>Cadastre-se</Link>
-          </p>
-        </form>
-      </div>
-
-      <Toast
-        message={toast}
-        type="success"
-        onClose={() => setToast('')}
-      />
-    </main>
+        <Toast
+          message={toast}
+          type="success"
+          onClose={() => setToast('')}
+        />
+      </main>
+    </>
   )
 }

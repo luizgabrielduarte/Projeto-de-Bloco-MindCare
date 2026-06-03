@@ -1,0 +1,213 @@
+/* ─── NAV BAR ─── */
+.nav {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 300;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.875rem 1.25rem;
+  background: rgba(245, 247, 245, 0.93);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border-bottom: 1px solid var(--borda);
+}
+
+/* Brand */
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  text-decoration: none;
+  color: var(--texto);
+  flex-shrink: 0;
+}
+
+.brandImg {
+  width: 30px;
+  height: 30px;
+  object-fit: contain;
+}
+
+.brandName {
+  font-family: 'DM Serif Display', serif;
+  font-size: 1.15rem;
+  font-weight: 400;
+  letter-spacing: -0.01em;
+}
+
+/* Desktop links — hidden on mobile */
+.desktopLinks {
+  display: none;
+}
+
+/* Hamburger — visible on mobile */
+.hamburger {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 5px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 6px;
+  min-height: 44px;
+  min-width: 44px;
+  align-items: center;
+}
+
+.bar {
+  display: block;
+  width: 22px;
+  height: 2px;
+  background: var(--verde);
+  border-radius: 2px;
+  transition: transform 0.28s ease, opacity 0.28s ease;
+  transform-origin: center;
+}
+
+.hamburgerOpen .bar:nth-child(1) {
+  transform: translateY(7px) rotate(45deg);
+}
+.hamburgerOpen .bar:nth-child(2) {
+  opacity: 0;
+  transform: scaleX(0);
+}
+.hamburgerOpen .bar:nth-child(3) {
+  transform: translateY(-7px) rotate(-45deg);
+}
+
+/* ─── OVERLAY ─── */
+.overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 400;
+  background: rgba(28, 43, 34, 0);
+  pointer-events: none;
+  transition: background 0.3s ease;
+}
+
+.overlayVisible {
+  background: rgba(28, 43, 34, 0.38);
+  pointer-events: all;
+  backdrop-filter: blur(3px);
+  -webkit-backdrop-filter: blur(3px);
+}
+
+/* ─── DRAWER ─── */
+.drawer {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 500;
+  width: min(76vw, 280px);
+  background: var(--branco);
+  display: flex;
+  flex-direction: column;
+  padding: 1.5rem 1.5rem 2.5rem;
+  transform: translateX(100%);
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: -4px 0 24px rgba(28, 43, 34, 0.1);
+}
+
+.drawerOpen {
+  transform: translateX(0);
+}
+
+.drawerHeader {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 1px solid var(--borda);
+  margin-bottom: 1rem;
+  padding-top: 0.5rem;
+}
+
+.drawerLogo {
+  width: 32px;
+  height: 32px;
+  object-fit: contain;
+}
+
+.drawerBrandName {
+  font-family: 'DM Serif Display', serif;
+  font-size: 1.15rem;
+  color: var(--texto);
+}
+
+.drawerNav {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.drawerLink {
+  text-decoration: none;
+  color: var(--cinza);
+  font-size: 1.05rem;
+  font-weight: 500;
+  padding: 1rem 0;
+  border-bottom: 1px solid var(--borda);
+  transition: color 0.18s;
+  display: flex;
+  align-items: center;
+}
+
+.drawerLink:last-child {
+  border-bottom: none;
+}
+
+.drawerLinkActive {
+  color: var(--verde);
+}
+
+.drawerFooter {
+  font-size: 0.72rem;
+  color: var(--borda);
+  text-align: center;
+}
+
+/* ─── DESKTOP (600px+) ─── */
+@media (min-width: 600px) {
+  .hamburger {
+    display: none;
+  }
+
+  .desktopLinks {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+  }
+
+  .navLink {
+    text-decoration: none;
+    color: var(--cinza);
+    font-size: 0.9rem;
+    font-weight: 500;
+    transition: color 0.18s;
+  }
+
+  .navLink:hover,
+  .navLinkActive {
+    color: var(--verde);
+  }
+
+  .navBtn {
+    text-decoration: none;
+    background: var(--verde);
+    color: white;
+    font-size: 0.88rem;
+    font-weight: 600;
+    padding: 0.55rem 1.1rem;
+    border-radius: 100px;
+    transition: opacity 0.18s;
+  }
+
+  .navBtn:hover {
+    opacity: 0.85;
+  }
+}
