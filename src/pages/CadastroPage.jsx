@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
-import { createUserWithEmailAndPassword, fetchSignInMethodsForEmail } from 'firebase/auth'
+import { createUserWithEmailAndPassword, signOut } from 'firebase/auth'
 import { collection, query, where, getDocs, setDoc, doc } from 'firebase/firestore'
 import { auth, db } from '../firebase'
 import Input from '../components/Input.jsx'
@@ -8,8 +8,6 @@ import Button from '../components/Button.jsx'
 import Alert from '../components/Alert.jsx'
 import Navbar from '../components/Navbar.jsx'
 import styles from './CadastroPage.module.css'
-
-//Teste de push
 
 function validarCPF(cpf) {
   cpf = cpf.replace(/\D/g, '')
@@ -56,7 +54,9 @@ async function buscarCEP(cep) {
 
 const campoInicial = { valor: '', erro: '' }
 
-export default function CadastroPage() {
+export default function CadastroPage({ role = 'paciente' }) {
+  const ehProfissional = role === 'profissional'
+
   const [campos, setCampos] = useState({
     nome:          campoInicial,
     sobrenome:     campoInicial,
@@ -65,6 +65,8 @@ export default function CadastroPage() {
     confirmaSenha: campoInicial,
     cpf:           campoInicial,
     cep:           campoInicial,
+    registro:      campoInicial,
+    especialidade: campoInicial,
   })
   const [enderecoInfo, setEnderecoInfo] = useState('')
   const [buscandoCep, setBuscandoCep] = useState(false)
@@ -75,7 +77,6 @@ export default function CadastroPage() {
   const touchStartY = useRef(null)
   const touchStartTime = useRef(null)
 
-  // Swipe right → back to home
   useEffect(() => {
     const onTouchStart = (e) => {
       touchStartX.current = e.touches[0].clientX
@@ -87,7 +88,7 @@ export default function CadastroPage() {
       const dx = e.changedTouches[0].clientX - touchStartX.current
       const dy = Math.abs(e.changedTouches[0].clientY - touchStartY.current)
       const dt = Date.now() - touchStartTime.current
-      if (dx > 60 && dy < 80 && dt < 500) navigate('/')
+      if (dx > 60 && dy < 80 && dt < 500) navigate('/cadastro')
       touchStartX.current = null
     }
     document.addEventListener('touchstart', onTouchStart, { passive: true })
@@ -98,7 +99,6 @@ export default function CadastroPage() {
     }
   }, [navigate])
 
-
   function set(campo, valor, erro = '') {
     setCampos(prev => ({ ...prev, [campo]: { valor, erro } }))
   }
@@ -107,7 +107,6 @@ export default function CadastroPage() {
     setCampos(prev => ({ ...prev, [campo]: { ...prev[campo], erro } }))
   }
 
-  // Validações individuais por campo (chamadas no onBlur)
   function blurNome() {
     if (!campos.nome.valor.trim()) setErro('nome', 'Campo obrigatório.')
     else setErro('nome', '')
@@ -142,6 +141,18 @@ export default function CadastroPage() {
     if (!cpfLimpo) setErro('cpf', 'Campo obrigatório.')
     else if (!validarCPF(cpfLimpo)) setErro('cpf', 'CPF inválido.')
     else setErro('cpf', '')
+  }
+
+  function blurRegistro() {
+    if (!ehProfissional) return
+    if (!campos.registro.valor.trim()) setErro('registro', 'Campo obrigatório.')
+    else setErro('registro', '')
+  }
+
+  function blurEspecialidade() {
+    if (!ehProfissional) return
+    if (!campos.especialidade.valor.trim()) setErro('especialidade', 'Campo obrigatório.')
+    else setErro('especialidade', '')
   }
 
   async function blurCEP() {
@@ -209,6 +220,11 @@ export default function CadastroPage() {
       valido = false
     }
 
+    if (ehProfissional) {
+      if (!v.registro.valor.trim())      { setErro('registro', 'Campo obrigatório.'); valido = false }
+      if (!v.especialidade.valor.trim()) { setErro('especialidade', 'Campo obrigatório.'); valido = false }
+    }
+
     return valido
   }
 
@@ -221,23 +237,7 @@ export default function CadastroPage() {
     setLoading(true)
 
     try {
-      const metodos = await fetchSignInMethodsForEmail(auth, campos.email.valor.trim())
-      if (metodos.length > 0) {
-        setErro('email', 'Este e-mail já está cadastrado.')
-        setLoading(false)
-        return
-      }
-
       const cpfLimpo = campos.cpf.valor.replace(/\D/g, '')
-      if (cpfLimpo !== '11111111111') {
-        const q = query(collection(db, 'usuarios'), where('cpf', '==', cpfLimpo))
-        const snap = await getDocs(q)
-        if (!snap.empty) {
-          setErro('cpf', 'Este CPF já está cadastrado.')
-          setLoading(false)
-          return
-        }
-      }
 
       const { user } = await createUserWithEmailAndPassword(
         auth,
@@ -245,19 +245,38 @@ export default function CadastroPage() {
         campos.senha.valor
       )
 
-      await setDoc(doc(db, 'usuarios', user.uid), {
+      if (cpfLimpo !== '11111111111') {
+        const q = query(collection(db, 'usuarios'), where('cpf', '==', cpfLimpo))
+        const snap = await getDocs(q)
+        if (!snap.empty) {
+          await user.delete()
+          setErro('cpf', 'Este CPF já está cadastrado.')
+          setLoading(false)
+          return
+        }
+      }
+
+      const dados = {
         nome:      campos.nome.valor.trim(),
         sobrenome: campos.sobrenome.valor.trim(),
         email:     campos.email.valor.trim(),
         cpf:       cpfLimpo,
         cep:       campos.cep.valor.replace(/\D/g, ''),
+        role,
+        foto:      '',
         criadoEm:  new Date(),
-      })
+      }
 
-      sessionStorage.setItem(
-        "toast",
-        "Cadastro realizado com sucesso!"
-      )
+      if (ehProfissional) {
+        dados.registro = campos.registro.valor.trim()
+        dados.especialidade = campos.especialidade.valor.trim()
+      }
+
+      await setDoc(doc(db, 'usuarios', user.uid), dados)
+
+      await signOut(auth)
+
+      sessionStorage.setItem('toast', 'Cadastro realizado com sucesso!')
 
       navigate('/login', { state: { cadastroSucesso: true } })
     } catch (err) {
@@ -284,7 +303,7 @@ export default function CadastroPage() {
 
         <div className={styles.header}>
           <h1>MindCare</h1>
-          <p>Crie sua conta</p>
+          <p>{ehProfissional ? 'Cadastro de profissional' : 'Cadastro de paciente'}</p>
         </div>
 
         <form className={styles.form} onSubmit={handleSubmit} noValidate>
@@ -369,6 +388,29 @@ export default function CadastroPage() {
               <p className={styles.enderecoInfo}>{enderecoInfo}</p>
             )}
           </div>
+
+          {ehProfissional && (
+            <>
+              <Input
+                id="registro"
+                label="Registro profissional (CRP)"
+                value={campos.registro.valor}
+                onChange={e => set('registro', e.target.value)}
+                onBlur={blurRegistro}
+                placeholder="06/123456"
+                error={campos.registro.erro}
+              />
+              <Input
+                id="especialidade"
+                label="Especialidade"
+                value={campos.especialidade.valor}
+                onChange={e => set('especialidade', e.target.value)}
+                onBlur={blurEspecialidade}
+                placeholder="Ex: Terapia Cognitivo-Comportamental"
+                error={campos.especialidade.erro}
+              />
+            </>
+          )}
 
           <Button type="submit" loading={loading} disabled={loading}>
             {loading ? 'Cadastrando...' : 'Criar conta'}

@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { signInWithEmailAndPassword } from 'firebase/auth'
 import { auth } from '../firebase'
+import { useAuth } from '../context/useAuth.js'
 import Navbar from '../components/Navbar.jsx'
 import Input from '../components/Input.jsx'
 import Button from '../components/Button.jsx'
@@ -10,35 +11,35 @@ import Toast from '../components/Toast.jsx'
 import styles from './LoginPage.module.css'
 
 export default function LoginPage() {
+  const location = useLocation()
+  const navigate = useNavigate()
+  const { user, perfil, carregando } = useAuth()
   const [email, setEmail] = useState('')
   const [senha, setSenha] = useState('')
   const [erro, setErro] = useState('')
   const [loading, setLoading] = useState(false)
-  const [toast, setToast] = useState('')
-  const location = useLocation()
-  const navigate = useNavigate()
+  const [toast, setToast] = useState(() => {
+    const mensagem = sessionStorage.getItem('toast')
+    if (mensagem) {
+      sessionStorage.removeItem('toast')
+      return mensagem
+    }
+    if (location.state?.cadastroSucesso) {
+      return 'Conta criada com sucesso! Faça login para continuar.'
+    }
+    return ''
+  })
   const touchStartX = useRef(null)
   const touchStartY = useRef(null)
   const touchStartTime = useRef(null)
-  const [toast, setToast] = useState("")
 
   useEffect(() => {
-    const mensagem = sessionStorage.getItem("toast")
-
-    if (mensagem) {
-      setToast(mensagem)
-      sessionStorage.removeItem("toast")
+    if (carregando) return
+    if (user && perfil !== undefined) {
+      navigate(perfil?.role === 'profissional' ? '/profissional' : '/paciente', { replace: true })
     }
-  }, [])
+  }, [user, perfil, carregando, navigate])
 
-  useEffect(() => {
-    if (location.state?.cadastroSucesso) {
-      setToast('Conta criada com sucesso! Faça login para continuar.')
-      window.history.replaceState({}, '')
-    }
-  }, [])
-
-  // Gesto
   useEffect(() => {
     const onTouchStart = (e) => {
       touchStartX.current = e.touches[0].clientX

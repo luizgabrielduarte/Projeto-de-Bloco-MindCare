@@ -21,6 +21,12 @@
   color: white;
 }
 
+.secondary {
+  background: var(--verde-claro);
+  color: var(--verde);
+  border: 1.5px solid var(--borda);
+}
+
 .spinner {
   width: 18px;
   height: 18px;
