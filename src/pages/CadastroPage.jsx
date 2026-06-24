@@ -9,6 +9,8 @@ import Alert from '../components/Alert.jsx'
 import Navbar from '../components/Navbar.jsx'
 import styles from './CadastroPage.module.css'
 
+//Teste de push
+
 function validarCPF(cpf) {
   cpf = cpf.replace(/\D/g, '')
   if (cpf === '11111111111') return true
